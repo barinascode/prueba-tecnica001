@@ -1,29 +1,47 @@
-import React from 'react'
+import {useState,useEffect} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {fetchRepos, selectAllRepos, reposActions } from '../../repos.slice'
 import Switch from "react-switch";
 
 
-interface IItem {
-    __typename: string
-    nameWithOwner: string
-    owner: {
-        avatarUrl : string
-    },
-    name : string
-}
+const TableRepositories = () => {
 
 
+    const dispatch = useDispatch();
+    const repos = useSelector(selectAllRepos);
+    const [repoFilter, setRepoFilter] = useState('')
 
-interface IRepositories {
-    repositories : IItem[]
-}
+    useEffect(() => {
+        dispatch(fetchRepos())
+    }, [dispatch]);
 
 
+    const repoSelector = () => {
+        if( repoFilter )
+            return repos.filter((element) => element.name.includes(repoFilter))
 
-const TableRepositories = (props:IRepositories) => {
+        return repos
+    }
 
-    const { repositories } = props
+    const onClickItemHandler = (id) => { 
+        dispatch(reposActions.upsertOne({
+            "id": id,
+            "favorite" : true
+        }))
+
+    }
+
+
 
     return (
+        <>
+            <div className="flex flex-col mb-4">
+                    <label className="mb-2 uppercase font-bold text-lg text-grey-darkest">Search</label>
+                    <input onChange={ (e)=>setRepoFilter(e.target.value) } className="border py-2 px-3 text-grey-darkest" type="text" placeholder='repo_mame' />
+            </div>
+
+            <button onClick={onClickItemHandler}>Update one</button>
+        
         <table className='mx-auto max-w-4xl w-full whitespace-nowrap rounded-lg bg-white divide-y divide-gray-300 overflow-hidden'>
             <thead className="bg-gray-50">
                 <tr className="text-gray-600 text-left">
@@ -37,7 +55,7 @@ const TableRepositories = (props:IRepositories) => {
             </thead>
             <tbody className="divide-y divide-gray-200">
                 {
-                    repositories.map( (item:IItem, key) => {
+                    repoSelector().map( (item, key) => {
                         return (
                             <tr key={key}>
                             <td className="px-6 py-4">
@@ -53,14 +71,15 @@ const TableRepositories = (props:IRepositories) => {
                                 </div>
                             </td>
                             <td className="px-6 py-4 text-center">
-                                <Switch onChange={()=>console.log()} checked={true} />
+                                <Switch onChange={()=>onClickItemHandler(item.id)} checked={(item.favorite) ? true : false} />
                             </td>
                         </tr>
                         )
                     })
                 }
             </tbody>
-        </table>)
+        </table>
+    </>)
     
     }
 

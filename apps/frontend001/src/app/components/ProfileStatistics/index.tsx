@@ -1,11 +1,12 @@
+import { useSelector } from 'react-redux'
+import { selectAllRepos, reposActions } from '../../repos.slice'
+const ProfileStatistics = () => {
+    
+    const repos = useSelector(selectAllRepos);
+    const totalFiltered = 0
+    const totalFavorites = 0
 
-interface IProfileStatistics{
-    totalRepositories : number,
-    totalFiltered : number
-    totalFavorites : number
-}
 
-const ProfileStatistics = ({totalRepositories, totalFiltered, totalFavorites, }:IProfileStatistics) => {
 
     return (
         <div className="grid grid-cols-12 gap-6 mt-5">
@@ -17,7 +18,7 @@ const ProfileStatistics = ({totalRepositories, totalFiltered, totalFavorites, }:
                     <div className="p-5">
                         <div className="ml-2 w-full flex-1">
                             <div>
-                                <div className="mt-3 text-3xl font-bold leading-8">{totalRepositories}</div>
+                                <div className="mt-3 text-3xl font-bold leading-8">{repos.length}</div>
                                 <div className="mt-1 text-base text-gray-600">Total repositories</div>
                             </div>
                         </div>
